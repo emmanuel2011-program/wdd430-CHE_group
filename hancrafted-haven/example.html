@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Handcrafted Haven — Design Preview</title>
+    <meta name="description"
+        content="Design preview for Handcrafted Haven — warm artisan palette, typography, and components." />
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Pacifico&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* palette variables */
+            --primary: #6D4C41;
+            /* Rich Brown */
+            --secondary: #D4A373;
+            /* Warm Sand/Clay */
+            --accent: #FFB703;
+            /* Golden Amber */
+            --accent2: #336065;
+            /* Teal */
+            --neutral-light: #F8F5F0;
+            /* Off-White */
+            --neutral-dark: #333333;
+            /* Charcoal */
+
+            --radius: 12px;
+            --gap: 20px;
+            --max-width: 1100px;
+        }
+
+        /* Reset & base */
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
+            background: var(--neutral-light);
+            color: var(--neutral-dark);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.45;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--max-width)
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--gap);
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            border-radius: 16px;  /* optional */
+            overflow: hidden;     /* ensures the image stays contained */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;     /* optional if your image already has styling */
+            box-shadow: 0 6px 18px rgba(109, 76, 65, 0.12);
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* or contain, depending on your preference */
+            display: block;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size:2em;
+            color: var(--primary)
+        }
+
+        .brand p {
+            margin: 0;
+            font-size: 1em;
+            color: rgba(51, 51, 51, 0.7)
+        }
+
+        nav {
+            display: flex;
+            gap: 16px;
+            align-items: center
+        }
+
+        nav a {
+            color: var(--neutral-dark);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600
+        }
+
+        nav a.cta {
+            background: var(--accent);
+            color: var(--neutral-dark)
+        }
+
+        /* hero */
+        .hero {
+            background: linear-gradient(180deg, rgba(255, 183, 3, 0.06), transparent);
+            border-radius: var(--radius);
+            padding: 28px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 22px;
+            align-items: center;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .hero h2 {
+            font-family: 'Playfair Display', serif;
+            margin: 0;
+            font-size: 28px;
+            color: var(--primary)
+        }
+
+        .hero p.lead {
+            margin-top: 8px;
+            margin-bottom: 18px;
+            color: rgba(51, 51, 51, 0.85)
+        }
+
+        .cta-row {
+            display: flex;
+            gap: 12px
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--neutral-light)
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--neutral-dark)
+        }
+
+        /* right panel - design tokens */
+        .tokens {
+            background: var(--neutral-light);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.03)
+        }
+
+        .swatches {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .swatch {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 6px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 700
+        }
+
+        .swatch.neutral-light {
+            color: var(--neutral-dark);
+            box-shadow: none;
+            border: 1px solid rgba(0, 0, 0, 0.04)
+        }
+
+        /* typography showcase */
+        .type-samples {
+            margin-top: 14px
+        }
+
+        .type-samples h3 {
+            margin: 0 0 6px 0;
+            font-size: 14px
+        }
+
+        .display-sample {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            margin-bottom: 8px
+        }
+
+        .body-sample {
+            font-size: 14px;
+            color: rgba(51, 51, 51, 0.9)
+        }
+
+        .accent-sample {
+            font-family: 'Pacifico', cursive;
+            color: var(--primary)
+        }
+
+        /* product grid */
+        .section {
+            margin-top: 24px
+        }
+
+        h3.section-title {
+            margin: 0 0 12px 0;
+            font-family: 'Playfair Display', serif;
+            color: var(--primary)
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04)
+        }
+
+        .card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px
+        }
+
+        .card h4 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif
+        }
+
+        .card p {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            color: rgba(51, 51, 51, 0.85)
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--primary)
+        }
+
+        /* side column - tasks & user stories */
+        .side {
+            margin-top: 18px;
+            padding: 14px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04)
+        }
+
+        ul.tasks {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        ul.tasks li {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start
+        }
+
+        .chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--secondary);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 12px
+        }
+
+        footer {
+            margin-top: 26px;
+            padding: 18px;
+            text-align: center;
+            color: rgba(51, 51, 51, 0.7);
+            font-size: 13px
+        }
+
+        /* responsive tweaks */
+        @media (max-width:880px) {
+            .hero {
+                grid-template-columns: 1fr
+            }
+
+            header {
+                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: stretch
+            }
+
+            nav {
+                justify-content: flex-start
+            }
+        }
+
+        /* accessibility focus styles */
+        a:focus,
+        button:focus {
+            outline: 3px solid rgba(255, 183, 3, 0.35);
+            outline-offset: 3px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" role="main">
+        <header>
+            <div class="brand">
+                <div class="logo" aria-hidden="true"><img src="./public/images/hh_logo_small.jpg"></div>
+                <div>
+                    <h1>Handcrafted Haven</h1>
+                    <p>Warm. Artisan. Home for makers.</p>
+                </div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <a href="#products">Products</a>
+                <a href="#stories">User Stories</a>
+                <a class="cta" href="#get-started">Get Started</a>
+            </nav>
+        </header>
+
+        <section class="hero" aria-labelledby="hero-title">
+            <div>
+                <h2 id="hero-title">A cozy marketplace for handcrafted goods</h2>
+                <p class="lead">This preview shows the proposed palette, typography, responsive layout, and a few
+                    component examples to base development and design work on.</p>
+
+                <div class="cta-row">
+                    <a class="btn btn-primary" href="#">View Prototype</a>
+                    <a class="btn btn-accent" href="#">Create Repo</a>
+                </div>
+
+                <div class="section" id="products">
+                    <h3 class="section-title">Product grid (sample)</h3>
+                    <div class="grid" aria-live="polite">
+                        <article class="card">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%23D4A373'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Playfair Display' font-size='24' fill='%23333'>Handmade Bowl</text></svg>"
+                                alt="Decorative handmade pottery">
+                            <h4>Handmade Clay Bowl</h4>
+                            <p>Small serving bowl thrown and glazed by local artist.</p>
+                            <div class="price-row">
+                                <div class="price">$28</div><a class="btn" href="#">Add</a>
+                            </div>
+                        </article>
+
+                        <article class="card">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%236D4C41'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Playfair Display' font-size='24' fill='%23F8F5F0'>Woven Scarf</text></svg>"
+                                alt="Woven wool scarf">
+                            <h4>Woven Wool Scarf</h4>
+                            <p>Hand-loomed scarf in natural dyes.</p>
+                            <div class="price-row">
+                                <div class="price">$42</div><a class="btn" href="#">Add</a>
+                            </div>
+                        </article>
+
+                        <article class="card">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%23FFB703'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Playfair Display' font-size='24' fill='%23333'>Candle</text></svg>"
+                                alt="Soy candle with amber scent">
+                            <h4>Amber Soy Candle</h4>
+                            <p>Small-batch candle with amber and cedar notes.</p>
+                            <div class="price-row">
+                                <div class="price">$16</div><a class="btn" href="#">Add</a>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <aside class="tokens" aria-label="Design tokens and typography">
+                <div>
+                    <h3 style="margin:0 0 8px 0;font-size:14px">Color Palette</h3>
+                    <div class="swatches">
+                        <div class="swatch" style="background:var(--primary)">#6D4C41</div>
+                        <div class="swatch" style="background:var(--secondary)">#D4A373</div>
+                        <div class="swatch" style="background:var(--accent)">#FFB703</div>
+                        <div class="swatch" style="background:var(--accent2)">#336065</div>
+                        <div class="swatch neutral-light"
+                            style="background:var(--neutral-light);color:var(--neutral-dark)">#F8F5F0</div>
+                        <div class="swatch" style="background:var(--neutral-dark)">#333333</div>
+                    </div>
+
+                    <div class="type-samples">
+                        <h3 style="margin-top:12px">Typography</h3>
+                        <div class="display-sample">Playfair Display — Elegant headings</div>
+                        <div class="body-sample">Inter / Open Sans — Clean, modern body text for readability across
+                            devices.</div>
+                        <div style="margin-top:8px"><span class="accent-sample">Pacifico</span> — Optional handwritten
+                            accent for logos or labels.</div>
+                    </div>
+
+                    <div style="margin-top:14px">
+                        <h3 style="margin-bottom:8px">Accessibility</h3>
+                        <p style="margin:0;font-size:13px;color:rgba(0,0,0,0.7)">Contrast and focus styles are included.
+                            Use semantic HTML and alt text for images; ensure form controls are labeled.</p>
+                    </div>
+                </div>
+            </aside>
+
+        </section>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;align-items:start">
+
+            <main>
+                <section class="section" id="stories">
+                    <h3 class="section-title">User stories (selected)</h3>
+                    <ul style="padding-left:14px;margin-top:8px">
+                        <li><strong>Signup & Login</strong> — secure authentication (signup/login/logout).</li>
+                        <li style="margin-top:6px"><strong>Seller Profile</strong> — create/edit seller profile with
+                            photo and bio.</li>
+                        <li style="margin-top:6px"><strong>Product Listing</strong> — add products with photos, pricing,
+                            edit/delete.</li>
+                        <li style="margin-top:6px"><strong>Product Browsing</strong> — responsive grid, product cards,
+                            pagination or lazy-load.</li>
+                        <li style="margin-top:6px"><strong>Search & Filter</strong> — by category, price, seller.</li>
+                        <li style="margin-top:6px"><strong>Checkout (mocked)</strong> — simulated payment flow for
+                            testing.</li>
+                    </ul>
+
+                    <div style="margin-top:14px">
+                        <h3 style="font-family:'Playfair Display',serif;color:var(--primary)">Work items / next steps
+                        </h3>
+                        <ol style="padding-left:18px">
+                            <li>Create GitHub repo & add team.</li>
+                            <li>Create Kanban board (To Do / In Progress / Done).</li>
+                            <li>Design Figma wireframes for homepage + product page.</li>
+                            <li>Implement base layout (header, footer, nav) and responsive grid.</li>
+                        </ol>
+                    </div>
+
+                </section>
+            </main>
+
+            <aside class="side" aria-labelledby="task-title">
+                <h4 id="task-title" style="margin:0 0 10px 0">Quick project checklist</h4>
+                <ul class="tasks">
+                    <li><span class="chip">Repo</span>
+                        <div><strong>Setup Repository</strong>
+                            <div style="font-size:12px;color:rgba(0,0,0,0.7)">Create GitHub repo and add collaborators
+                            </div>
+                        </div>
+                    </li>
+                    <li><span class="chip">Board</span>
+                        <div><strong>Project Board</strong>
+                            <div style="font-size:12px;color:rgba(0,0,0,0.7)">Kanban columns: To Do / In Progress / Done
+                            </div>
+                        </div>
+                    </li>
+                    <li><span class="chip">Readme</span>
+                        <div><strong>README.md</strong>
+                            <div style="font-size:12px;color:rgba(0,0,0,0.7)">Add summary, names, overview</div>
+                        </div>
+                    </li>
+                    <li><span class="chip">Env</span>
+                        <div><strong>Dev Environment</strong>
+                            <div style="font-size:12px;color:rgba(0,0,0,0.7)">Install Node, pnpm/yarn, dependencies
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div style="margin-top:14px">
+                    <h4 style="margin:0 0 8px 0">Notes</h4>
+                    <p style="margin:0;font-size:13px;color:rgba(0,0,0,0.7)">Use semantic markup, meaningful alt text,
+                        and include meta tags for SEO. Export colors and typography tokens for Figma.</p>
+                </div>
+            </aside>
+
+        </div>
+
+        <footer>
+            © Handcrafted Haven — Design preview • Example only
+        </footer>
+
+    </div>
+</body>
+
+</html>
