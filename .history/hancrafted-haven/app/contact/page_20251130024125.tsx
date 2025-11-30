@@ -1,6 +1,5 @@
 import LogoutButton from "../logout/logoutButton";
 
-
 export default function ContactPage() {
   return (
     <main className="contact-page">

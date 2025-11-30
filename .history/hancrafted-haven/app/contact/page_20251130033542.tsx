@@ -1,4 +1,4 @@
-import LogoutButton from "../logout/logoutButton";
+import LogoutButton from "../logout/LogoutButton";
 
 
 export default function ContactPage() {

@@ -1,5 +1,5 @@
 "use client";
-import LogoutButton from "../logout/logoutButton";
+import LogoutButton from "@/app/logout/LogoutButton";
 
 
 import Link from "next/link";
