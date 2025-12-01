@@ -1,6 +1,6 @@
 // src/app/about/page.tsx
 import { neon } from "@neondatabase/serverless";
-import LogoutButton from "@/app/logout/logoutButton";
+import LogoutButton from "@/logout/logoutButton";
 
 export default async function AboutPage() {
   const sql = neon(process.env.DATABASE_URL!);
