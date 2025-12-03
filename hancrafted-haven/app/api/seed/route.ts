@@ -2,7 +2,8 @@
 
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
-import { users, products, reviews } from '../../lib/placeholder-data-handcraftedhaven';
+import { users, products, reviews } from '@/app/lib/placeholder-data-handcraftedhaven';
+
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -108,7 +109,7 @@ export async function GET() {
 
   // Monkey-patch console.log so we can send logs back in the response
   const originalLog = console.log;
-  console.log = (msg: any) => {
+  console.log = (msg: unknown) => {
     logs.push(String(msg));
     originalLog(msg);
   };
@@ -129,15 +130,21 @@ export async function GET() {
       reviewsInserted,
       logs
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log("❌ Error during seed:");
-    console.log(error);
-
+    if (error instanceof Error) {
+      console.log(error.message);
+      return Response.json(
+        { error: error.message, logs },
+        { status: 500 }
+      );
+    }
+    // fallback for non-Error objects
     return Response.json(
-      { error: error.message, logs },
+      { error: String(error), logs },
       { status: 500 }
     );
   } finally {
     console.log = originalLog; // restore console.log
   }
-}
+} // <-- closing bracket for GET
