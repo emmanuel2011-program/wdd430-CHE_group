@@ -4,11 +4,24 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
-import { signIn } from '@/auth';
+import { signIn, auth } from '@/auth';
 import { AuthError } from 'next-auth';
 import { Review } from './definitions';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+// ------------------------------
+// HELPER FUNCTION - Check Product Ownership
+// ------------------------------
+async function checkProductOwnership(productId: string, userId: string): Promise<boolean> {
+  const result = await sql`
+    SELECT seller_id FROM products WHERE id = ${productId}
+  `;
+  
+  if (result.length === 0) return false;
+  
+  return result[0].seller_id === userId;
+}
 
 // ------------------------------
 // INVOICE SCHEMA DEFINITIONS
@@ -176,6 +189,15 @@ export type ProductState = {
 };
 
 export async function createProduct(prevState: ProductState, formData: FormData) {
+  // Check authentication
+  const session = await auth();
+  
+  if (!session?.user?.id) {
+    return {
+      message: 'Unauthorized: You must be logged in to create products.',
+    };
+  }
+
   const validatedFields = CreateProductSchema.safeParse({
     name: formData.get('name'),
     image_url: formData.get('image_url'),
@@ -194,8 +216,8 @@ export async function createProduct(prevState: ProductState, formData: FormData)
 
   try {
     await sql`
-      INSERT INTO products (name, image_url, price, description)
-      VALUES (${name}, ${image_url}, ${price}, ${description})
+      INSERT INTO products (name, image_url, price, description, seller_id)
+      VALUES (${name}, ${image_url}, ${price}, ${description}, ${session.user.id})
     `;
   } catch (error) {
     return { message: 'Database Error: Failed to Create Product.' };
@@ -213,6 +235,24 @@ export async function updateProduct(
   prevState: ProductState,
   formData: FormData,
 ) {
+  // Check authentication
+  const session = await auth();
+  
+  if (!session?.user?.id) {
+    return {
+      message: 'Unauthorized: You must be logged in to update products.',
+    };
+  }
+
+  // Check if user owns this product
+  const isOwner = await checkProductOwnership(id, session.user.id);
+  
+  if (!isOwner) {
+    return {
+      message: 'Forbidden: You can only update your own products.',
+    };
+  }
+
   const validatedFields = UpdateProductSchema.safeParse({
     name: formData.get('name'),
     image_url: formData.get('image_url'),
@@ -247,6 +287,20 @@ export async function updateProduct(
 // DELETE PRODUCT
 // ------------------------------
 export async function deleteProduct(id: string) {
+  // Check authentication
+  const session = await auth();
+  
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized: You must be logged in to delete products.');
+  }
+
+  // Check if user owns this product
+  const isOwner = await checkProductOwnership(id, session.user.id);
+  
+  if (!isOwner) {
+    throw new Error('Forbidden: You can only delete your own products.');
+  }
+
   try {
     await sql`DELETE FROM products WHERE id = ${id}`;
   } catch (error) {

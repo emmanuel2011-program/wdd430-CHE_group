@@ -33,44 +33,27 @@ export async function fetchFilteredProducts(
 ): Promise<FormattedProductsTable[]> {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  // Build dynamic SQL filters (just JS strings)
-  let filters = sql`(p.name ILIKE ${'%' + query + '%'} OR p.description ILIKE ${'%' + query + '%'})`;
-
-  if (category.trim() !== "") {
-    filters = sql`${filters} AND c.name = ${category}`;
-  }
-
-  if (minPrice.trim() !== "") {
-    filters = sql`${filters} AND p.price >= ${Number(minPrice)}`;
-  }
-
-  if (maxPrice.trim() !== "") {
-    filters = sql`${filters} AND p.price <= ${Number(maxPrice)}`;
-  }
-
   const results: FormattedProductsTable[] = await sql<FormattedProductsTable[]>`
-  SELECT
-    p.id,
-    p.name,
-    p.description,
-    p.price,
-    p.image_url,
-    p.category
-  FROM products p
-  WHERE
-    (p.name ILIKE ${'%' + query + '%'} OR p.description ILIKE ${'%' + query + '%'})
-    AND (${category} = '' OR p.category = ${category})
-    AND (${minPrice} = '' OR p.price >= ${Number(minPrice)})
-    AND (${maxPrice} = '' OR p.price <= ${Number(maxPrice)})
-  LIMIT ${ITEMS_PER_PAGE}
-  OFFSET ${offset};
-`;
+    SELECT
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.image_url,
+      p.category,
+      p.seller_id
+    FROM products p
+    WHERE
+      (p.name ILIKE ${'%' + query + '%'} OR p.description ILIKE ${'%' + query + '%'})
+      AND (${category} = '' OR p.category = ${category})
+      AND (${minPrice} = '' OR p.price >= ${Number(minPrice)})
+      AND (${maxPrice} = '' OR p.price <= ${Number(maxPrice)})
+    LIMIT ${ITEMS_PER_PAGE}
+    OFFSET ${offset};
+  `;
 
   return results;
 }
-
-
-
 
 export async function fetchProductsPages(query: string) {
   try {

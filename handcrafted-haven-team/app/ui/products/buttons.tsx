@@ -28,9 +28,14 @@ export function UpdateProduct({ id }: { id: string }) {
 
 export function DeleteProduct({ id }: { id: string }) {
   const deleteProductWithId = deleteProduct.bind(null, id);
+  
   return (
     <form action={deleteProductWithId}>
-      <button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
+      <button 
+        type="submit" 
+        className="rounded-md border p-2 hover:bg-gray-100"
+        suppressHydrationWarning
+      >
         <span className="sr-only">Delete</span>
         <TrashIcon className="w-5" />
       </button>
