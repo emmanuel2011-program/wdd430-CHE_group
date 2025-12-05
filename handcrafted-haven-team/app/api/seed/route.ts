@@ -3,7 +3,7 @@
 
 import bcryptjs from 'bcryptjs'; // Changed from bcrypt
 import postgres from 'postgres';
-import { users, products, reviews } from '../../lib/placeholder-data-handcraftedhaven';
+import { users, products, reviews, sellerStories } from '../../lib/placeholder-data-handcraftedhaven';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -107,6 +107,37 @@ async function seedReviews() {
 }
 
 // ------------------------------
+// Seed Seller Stories
+// ------------------------------
+async function seedSellerStories() {
+  console.log("🔄 Seeding seller stories...");
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS seller_stories (
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      user_id UUID REFERENCES users(id),
+      title TEXT NOT NULL,
+      story TEXT NOT NULL
+    );
+  `;
+
+  let inserted = 0;
+
+  for (const story of sellerStories) {
+    const result = await sql`
+      INSERT INTO seller_stories (id, user_id, title, story)
+      VALUES (${story.id}, ${story.user_id}, ${story.title}, ${story.story})
+      ON CONFLICT (id) DO NOTHING;
+    `;
+    inserted += result.count;
+  }
+
+  console.log(`✅ Seller stories seeding complete. Inserted: ${inserted}`);
+  return inserted;
+}
+
+
+// ------------------------------
 // Seed All Data
 // ------------------------------
 export async function GET() {
@@ -125,6 +156,8 @@ export async function GET() {
     const usersInserted = await seedUsers();
     const productsInserted = await seedProducts();
     const reviewsInserted = await seedReviews();
+    const sellerStoriesInserted = await seedSellerStories();
+
 
     console.log("🎉 Seed complete!");
 
@@ -133,6 +166,7 @@ export async function GET() {
       usersInserted,
       productsInserted,
       reviewsInserted,
+      sellerStoriesInserted,
       logs
     });
   } catch (error: any) {

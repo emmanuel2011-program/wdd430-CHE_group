@@ -14,8 +14,11 @@ import {
   LatestInvoiceRaw,
   Revenue,
   FormattedProductsTable,
+  SellerTable,
+  SellerStory,
 } from './definitions';
 import { formatCurrency } from './utils';
+
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -361,4 +364,127 @@ export async function fetchProductById(
     console.error('Database Error in fetchProductById:', error);
     throw new Error('Failed to fetch product.');
   }
+}
+
+
+// ------------------------------
+// Fetch filtered sellers
+// ------------------------------
+export async function fetchFilteredSellers(
+  query: string,
+  currentPage: number
+): Promise<SellerTable[]> {
+  const limit = 10;
+  const offset = (currentPage - 1) * limit;
+
+  const result = await sql`
+    SELECT id, name, email
+    FROM users
+    WHERE account_type = 'artisan'
+      AND (name ILIKE ${'%' + query + '%'} OR email ILIKE ${'%' + query + '%'})
+    ORDER BY name
+    LIMIT ${limit} OFFSET ${offset};
+  `;
+
+  // Convert RowList to array and map to SellerTable
+  const rows = Array.from(result);
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    email: row.email,
+  }));
+}
+
+// ------------------------------
+// Fetch a single seller by ID
+// ------------------------------
+export async function fetchSellerById(sellerId: string): Promise<SellerTable | null> {
+  const result = await sql`
+    SELECT id, name, email
+    FROM users
+    WHERE id = ${sellerId} AND account_type = 'artisan'
+    LIMIT 1;
+  `;
+
+  if (!result || result.length === 0) return null;
+
+  // Explicitly cast Row to your type
+  const seller: SellerTable = {
+    id: result[0].id,
+    name: result[0].name,
+    email: result[0].email,
+  };
+
+  return seller;
+}
+
+// ------------------------------
+// Fetch products for a specific seller
+// ------------------------------
+export async function fetchProductsBySeller(
+  sellerId: string
+): Promise<FormattedProductsTable[]> {
+  const result = await sql`
+    SELECT id, name, image_url, price, description, category, seller_id
+    FROM products
+    WHERE seller_id = ${sellerId}
+    ORDER BY name;
+  `;
+
+  // postgres.js RowList behaves like an array, but TypeScript doesn't see it as one
+  const rows = Array.from(result); // convert RowList to array
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    image_url: row.image_url,
+    price: row.price,
+    description: row.description,
+    category: row.category,
+    seller_id: row.seller_id, // include required field
+  }));
+}
+
+// ------------------------------
+// Fetch seller story for a specific seller
+// ------------------------------
+export async function fetchSellerStory(sellerId: string): Promise<SellerStory | null> {
+  const result = await sql`
+    SELECT id, user_id, title, story
+    FROM seller_stories
+    WHERE user_id = ${sellerId}
+    LIMIT 1;
+  `;
+
+  if (!result || result.length === 0) return null;
+
+  const story: SellerStory = {
+    id: result[0].id,
+    user_id: result[0].user_id,
+    title: result[0].title,
+    story: result[0].story,
+  };
+
+  return story;
+}
+
+// ------------------------------
+// Get total number of seller pages
+// ------------------------------
+export async function fetchSellersPages(query: string) {
+  const limit = 10; // same limit as in your SellersTable
+
+  const result = await sql`
+    SELECT COUNT(*) AS count
+    FROM users
+    WHERE account_type = 'artisan'
+      AND (name ILIKE ${'%' + query + '%'} OR email ILIKE ${'%' + query + '%'});
+  `;
+
+  // `result[0].count` will be a string, so convert to number
+  const totalCount = Number(result[0].count);
+
+  const totalPages = Math.ceil(totalCount / limit);
+  return totalPages;
 }

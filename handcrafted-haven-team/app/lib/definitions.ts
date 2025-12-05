@@ -13,6 +13,19 @@ export type User = {
   account_type: 'artisan' | 'customer';
 };
 
+export type SellerTable = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export interface SellerStory {
+  id: string;
+  user_id: string;
+  title: string;
+  story: string;
+}
+
 export type Product = {
   id: string;
   name: string;

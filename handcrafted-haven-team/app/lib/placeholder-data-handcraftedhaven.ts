@@ -2,7 +2,7 @@
 // Sample placeholder data for Handcrafted Haven project
 // cSpell:ignore handcraftedhaven
 
-import { User, Product, Review } from './definitions';
+import { User, Product, Review, SellerStory } from './definitions';
 
 // --- Users ---
 const users: User[] = [
@@ -207,4 +207,35 @@ const reviews: Review[] = [
   },
 ];
 
-export { users, products, reviews };
+ const sellerStories: SellerStory[] = [
+  {
+    id: '01a7df3e-aaa6-4c78-bc19-d4c0f0028901',
+    user_id: '1f5c8b32-1d2a-4d57-9b8a-1e6b0f9a2a01',
+    title: 'From Forest to Workshop',
+    story:
+      'I began woodworking as a way to feel closer to nature. Every piece I create starts as a fallen branch or reclaimed wood. My goal is to give forgotten materials a new life, filled with warmth and personality.',
+  },
+  {
+    id: '02c7af3e-77c9-4f22-b4d1-8b05fbde8902',
+    user_id: '2a7f9c21-3e4b-4d67-bc1d-3f8c2a9e7f22',
+    title: 'Crafting Leather, Crafting Legacy',
+    story:
+      'My grandfather taught me the art of leatherwork when I was a child. Today I honor his legacy by creating durable, timeless leather goods using traditional hand-stitching techniques passed down through generations.',
+  },
+  {
+    id: '03b9ce44-ad98-4229-a316-4b2df8f88903',
+    user_id: '3c9d7e45-6f8a-4a21-a5d7-9c0e1f2b3d34',
+    title: 'Shaping Stories in Stone',
+    story:
+      'Stone carving began as a hobby during college and quickly became my passion. Each sculpture I make is meant to reflect peace, grounding, and the quiet magic of natural stone.',
+  },
+  {
+    id: '04d844ce-8911-4899-8f2f-31c971b68904',
+    user_id: '410544b2-4001-4271-9855-fec4b6a6442a',
+    title: 'The Joy of Creating',
+    story:
+      'I love working with my hands and experimenting with new crafts. My shop is a place to explore creativity, try new ideas, and share my handmade pieces with others.',
+  },
+];
+
+export { users, products, reviews, sellerStories };
