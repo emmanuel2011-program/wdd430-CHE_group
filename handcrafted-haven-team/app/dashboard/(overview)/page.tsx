@@ -3,9 +3,17 @@ import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import CustomerDashboard from '@/app/ui/dashboard/customer-dashboard';
 import ArtisanDashboard from '@/app/ui/dashboard/artisan-dashboard';
-import postgres from "postgres";
+import postgres from 'postgres';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+// Type for session user
+type SessionUser = {
+  id: string;
+  name: string;
+  email: string;
+  account_type: 'customer' | 'artisan';
+};
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -15,28 +23,26 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  const accountType = (session.user as any).accountType;
+  const user = session.user as SessionUser;
+  const accountType = user.account_type;
 
-  // CUSTOMER DASHBOARD LOGIC
+  // CUSTOMER DASHBOARD
   if (accountType === 'customer') {
-    // Fetch all products
-    const products = await sql`SELECT * FROM products`;
+    const products = (await sql`SELECT * FROM products`) || [];
 
-    // Pick a random one
-    const featuredProduct = products.length
-      ? products[Math.floor(Math.random() * products.length)]
-      : null;
+    // Pick a random featured product (null if none)
+    const featuredProduct =
+      products.length > 0
+        ? products[Math.floor(Math.random() * products.length)]
+        : null;
 
-    // Get review count for this user (optional)
-    const userId = session.user.id!;
-    
-    const reviewRows = await sql`SELECT COUNT(*) FROM reviews WHERE user_id = ${userId}`;
-
-    const reviewCount = Number(reviewRows[0].count) || 0;
+    // Get review count (0 if none)
+    const reviewRows = (await sql`SELECT COUNT(*) FROM reviews WHERE user_id = ${user.id}`) || [];
+    const reviewCount = reviewRows.length > 0 ? Number(reviewRows[0].count) : 0;
 
     return (
       <CustomerDashboard
-        user={session.user}
+        user={user}
         featuredProduct={featuredProduct}
         reviewCount={reviewCount}
       />
@@ -45,7 +51,7 @@ export default async function DashboardPage() {
 
   // ARTISAN DASHBOARD
   if (accountType === 'artisan') {
-    return <ArtisanDashboard user={session.user} />;
+    return <ArtisanDashboard user={user} />;
   }
 
   // FALLBACK (unknown account type)
