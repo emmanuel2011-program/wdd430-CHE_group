@@ -2,12 +2,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { auth } from '@/auth'; // Adjust this import based on your auth setup
 import {
   fetchSellerById,
   fetchProductsBySeller,
-  fetchSellerStory,
+  fetchSellerStories, // Changed: fetch all stories
 } from '@/app/lib/data';
 import { formatCurrency } from '@/app/lib/utils';
+import SellerStoriesSection from '@/app/ui/sellers/seller-stories-section';
 
 interface SellerDetailPageProps {
   params: Promise<{ id: string }>;
@@ -17,6 +19,10 @@ export default async function SellerDetailPage(props: SellerDetailPageProps) {
   const params = await props.params;
   const { id } = params;
 
+  // Get current user session
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+
   // Fetch seller data
   const seller = await fetchSellerById(id);
   
@@ -24,9 +30,12 @@ export default async function SellerDetailPage(props: SellerDetailPageProps) {
     notFound();
   }
 
+  // Check if current user is the seller
+  const isOwnProfile = currentUserId === id;
+
   // Fetch related data
   const products = await fetchProductsBySeller(id);
-  const sellerStory = await fetchSellerStory(id);
+  const sellerStories = await fetchSellerStories(id); // Get all stories
 
   return (
     <div className="w-full">
@@ -44,15 +53,12 @@ export default async function SellerDetailPage(props: SellerDetailPageProps) {
         <p className="mt-2 text-gray-600">{seller.email}</p>
       </div>
 
-      {/* Seller Story */}
-      {sellerStory && (
-        <div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            {sellerStory.title}
-          </h2>
-          <p className="text-gray-700 leading-relaxed">{sellerStory.story}</p>
-        </div>
-      )}
+      {/* Seller Stories Section */}
+      <SellerStoriesSection 
+        sellerId={id} 
+        stories={sellerStories}
+        isOwnProfile={isOwnProfile}
+      />
 
       {/* Products */}
       <div className="rounded-lg bg-white p-6 shadow-sm">

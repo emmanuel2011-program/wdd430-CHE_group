@@ -447,13 +447,41 @@ export async function fetchProductsBySeller(
 }
 
 // ------------------------------
-// Fetch seller story for a specific seller
+// Fetch all stories for a specific seller
+// ------------------------------
+export async function fetchSellerStories(sellerId: string): Promise<SellerStory[]> {
+  try {
+    const result = await sql`
+      SELECT id, user_id, title, story
+      FROM seller_stories
+      WHERE user_id = ${sellerId}
+      ORDER BY id DESC
+    `;
+
+    const rows = Array.from(result);
+
+    return rows.map((row) => ({
+      id: row.id,
+      user_id: row.user_id,
+      title: row.title,
+      story: row.story,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch seller stories.');
+  }
+}
+
+// ------------------------------
+// Update the existing fetchSellerStory to return the first story
+// (Keep for backward compatibility)
 // ------------------------------
 export async function fetchSellerStory(sellerId: string): Promise<SellerStory | null> {
   const result = await sql`
     SELECT id, user_id, title, story
     FROM seller_stories
     WHERE user_id = ${sellerId}
+    ORDER BY id DESC
     LIMIT 1;
   `;
 
