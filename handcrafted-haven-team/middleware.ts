@@ -1,8 +1,19 @@
 // middleware.ts
 import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
 export default auth((req) => {
-  // Your middleware logic here
+  const { nextUrl } = req;
+  const user = req.auth?.user; // includes account_type from callbacks
+
+  // Only artisans can access create page
+  if (nextUrl.pathname === "/dashboard/products/create") {
+    if (!user || user.account_type !== "artisan") {
+      return NextResponse.redirect(new URL("/dashboard", nextUrl));
+    }
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {

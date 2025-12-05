@@ -1,6 +1,7 @@
 // app/dashboard/products/page.tsx
 import { Suspense } from 'react';
 import { Metadata } from 'next';
+import { auth } from '@/auth';
 
 import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
@@ -26,6 +27,13 @@ export default async function ProductsPage(props: {
 
   const searchParams = await props.searchParams;
 
+  // Get current user session
+  const session = await auth();
+  const currentUser = session?.user;
+  
+  // Check if user is a seller (artisan)
+  const isSeller = currentUser?.account_type === 'artisan';
+
   // Existing
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
@@ -45,10 +53,10 @@ export default async function ProductsPage(props: {
         <h1 className={`${lusitana.className} text-2xl`}>Products</h1>
       </div>
 
-      {/* Search + Add Product */}
+      {/* Search + Add Product (only show button to sellers) */}
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
         <Search placeholder="Search products..." />
-        <CreateProduct />
+        {isSeller && <CreateProduct />}
       </div>
 
       {/* Filter Form */}

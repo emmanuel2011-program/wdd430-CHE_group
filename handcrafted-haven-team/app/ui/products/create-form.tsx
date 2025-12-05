@@ -57,6 +57,36 @@ export default function CreateProductForm() {
             ))}
           </div>
         </div>
+        
+        
+
+        {/* Category */}
+        <div className="mb-4">
+          <label htmlFor="category" className="mb-2 block text-sm font-medium">
+            Category
+          </label>
+          <select
+            id="category"
+            name="category"
+            className="peer block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
+            defaultValue="other"
+            required
+          >
+            <option value="all">All</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="art">Art</option>
+            <option value="home decor">Home Decor</option>
+            <option value="clothing">Clothing</option>
+            <option value="other">Other</option>
+          </select>
+          <div id="category-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.category?.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+          </div>
+        </div>
 
         {/* Image URL */}
         <div className="mb-4">
@@ -108,6 +138,8 @@ export default function CreateProductForm() {
           </div>
         </div>
       </div>
+      
+
 
       {/* Buttons */}
       <div className="mt-6 flex justify-end gap-4">

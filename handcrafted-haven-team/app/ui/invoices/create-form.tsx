@@ -76,6 +76,8 @@ export default function CreateInvoiceForm({ customers }: { customers: CustomerFi
             ))}
           </div>
         </div>
+        
+            
 
         {/* Invoice Status */}
         <fieldset>

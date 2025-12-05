@@ -303,11 +303,11 @@ export async function fetchProducts(): Promise<Product[]> {
 
 export async function fetchProductById(
   id: string
-): Promise<(Product & { reviews: (Review & { user_name: string })[] }) | null> {
+): Promise<(Product & { reviews: (Review & { user_name: string })[], seller_id: string }) | null> {
   try {
-    // Fetch the product
+    // Fetch the product - MAKE SURE TO INCLUDE seller_id
     const [product] = await sql<Product[]>`
-      SELECT id, name, image_url, price, description
+      SELECT id, name, image_url, price, description, seller_id
       FROM products
       WHERE id = ${id}
       LIMIT 1
@@ -342,13 +342,13 @@ export async function fetchProductById(
       ...product,
       price: product.price / 100,
       reviews,
+      seller_id: product.seller_id, // Make sure this is included
     };
   } catch (error) {
     console.error('Database Error in fetchProductById:', error);
     throw new Error('Failed to fetch product.');
   }
 }
-
 
 // ------------------------------
 // Fetch filtered sellers

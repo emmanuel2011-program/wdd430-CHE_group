@@ -8,7 +8,6 @@ import postgres from 'postgres';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-// Define a type matching your database user
 interface DbUser {
   id: string;
   email: string;
@@ -18,19 +17,15 @@ interface DbUser {
 }
 
 async function getUser(email: string): Promise<DbUser | undefined> {
-  try {
-    const users = await sql`
-      SELECT * FROM users WHERE email=${email}
-    ` as DbUser[];
-    return users[0];
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
+  const users = await sql`
+    SELECT * FROM users WHERE email=${email}
+  ` as DbUser[];
+  return users[0];
 }
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
+
   providers: [
     Credentials({
       name: 'Credentials',
@@ -38,52 +33,48 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
+        const parsed = z.object({
+          email: z.string().email(),
+          password: z.string().min(6),
+        }).safeParse(credentials);
 
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
-          const user = await getUser(email);
-          
-          if (!user) {
-            console.log('User not found');
-            return null;
-          }
+        if (!parsed.success) return null;
 
-          const passwordsMatch = await bcrypt.compare(password, user.password);
+        const { email, password } = parsed.data;
+        const user = await getUser(email);
+        if (!user) return null;
 
-          if (passwordsMatch) {
-            // Return user object without password
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              accountType: user.account_type,
-            };
-          }
-        }
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) return null;
 
-        console.log('Invalid credentials');
-        return null;
+        // Return user object with account_type
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          account_type: user.account_type,
+        };
       },
     }),
   ],
+
   callbacks: {
-    ...authConfig.callbacks,
     async jwt({ token, user }) {
-      // Add account_type to token on sign in
+      // When user signs in, add custom fields to token
       if (user) {
-        token.accountType = (user as any).accountType;
+        token.id = user.id;
+        token.account_type = user.account_type;
       }
       return token;
     },
+
     async session({ session, token }) {
-      // Add account_type and id to session
-      if (session.user) {
-        (session.user as any).accountType = token.accountType;
-        (session.user as any).id = token.sub;
+      // Add custom fields from token to session
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.account_type = token.account_type as 'artisan' | 'customer';
       }
       return session;
     },

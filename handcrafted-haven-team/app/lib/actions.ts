@@ -147,22 +147,17 @@ export async function deleteInvoice(id: string) {
 const ProductFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, { message: 'Please enter a product name.' }),
-
-  description: z
-    .string()
-    .min(1, { message: 'Please enter a product description.' }),
-
-  image_url: z
-    .string()
+  description: z.string().min(1, { message: 'Please enter a product description.' }),
+  image_url: z.string()
     .min(1, 'Please enter an image URL.')
     .refine(
       (val) => /^\/|^https?:\/\//.test(val),
       'Use a relative path like /products/product.jpg or a full URL.'
     ),
-
-  price: z.coerce
-    .number()
-    .gt(0, { message: 'Please enter a price greater than $0.' }),
+  price: z.coerce.number().gt(0, { message: 'Please enter a price greater than $0.' }),
+  category: z.enum(['all', 'jewelry', 'art', 'home decor', 'clothing', 'other'], {
+    errorMap: () => ({ message: 'Please select a category.' }),
+  }),
 });
 
 
@@ -184,25 +179,27 @@ export type ProductState = {
     image_url?: string[];
     price?: string[];
     description?: string[];
+    category?: string[]; // <-- add this
   };
   message?: string | null;
 };
 
+// app/lib/actions.ts
 export async function createProduct(prevState: ProductState, formData: FormData) {
-  // Check authentication
+  // 1. Check authentication
   const session = await auth();
-  
   if (!session?.user?.id) {
-    return {
-      message: 'Unauthorized: You must be logged in to create products.',
-    };
+    return { message: 'Unauthorized: You must be logged in to create products.' };
   }
 
+  // 2. Validate fields with Zod
   const validatedFields = CreateProductSchema.safeParse({
     name: formData.get('name'),
     image_url: formData.get('image_url'),
     price: formData.get('price'),
     description: formData.get('description'),
+    // ← Add category here
+    category: formData.get('category'),
   });
 
   if (!validatedFields.success) {
@@ -212,20 +209,24 @@ export async function createProduct(prevState: ProductState, formData: FormData)
     };
   }
 
-  const { name, image_url, price, description } = validatedFields.data;
+  // 3. Extract validated data
+  const { name, image_url, price, description, category } = validatedFields.data;
 
+  // 4. Insert into the database
   try {
     await sql`
-      INSERT INTO products (name, image_url, price, description, seller_id)
-      VALUES (${name}, ${image_url}, ${price}, ${description}, ${session.user.id})
+      INSERT INTO products (name, image_url, price, description, category, seller_id)
+      VALUES (${name}, ${image_url}, ${price}, ${description}, ${category}, ${session.user.id})
     `;
   } catch (error) {
     return { message: 'Database Error: Failed to Create Product.' };
   }
 
+  // 5. Revalidate and redirect
   revalidatePath('/dashboard/products');
   redirect('/dashboard/products');
 }
+
 
 // ------------------------------
 // UPDATE PRODUCT
